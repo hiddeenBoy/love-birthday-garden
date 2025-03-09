@@ -86,24 +86,26 @@ const BirthdayCake = ({ onBlowCandles }: BirthdayCakeProps) => {
               <div key={i} className="absolute bottom-6 bg-love-100 rounded-full w-2 h-2" style={{ right: `${i * 10 + 5}px` }}></div>
             ))}
           </div>
+          
+          {/* Candles - Positioned on top of the cake */}
+          <div className="absolute w-full flex justify-center items-center" style={{ top: '-24px' }}>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="relative mx-2 z-10">
+                {/* Candle */}
+                <div className="w-3 h-16 bg-gold-300 rounded-sm"></div>
+                
+                {/* Flame */}
+                <div className={`candle-flame absolute -top-8 left-1/2 -translate-x-1/2 ${candlesBlown ? 'animate-blow' : 'animate-flame'}`}>
+                  <div className="w-4 h-8 bg-gold-500 rounded-full blur-[2px]"></div>
+                  <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-4 bg-love-400 rounded-full blur-[1px]"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
         
         {/* Plate */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-6 bg-gray-100 rounded-full shadow-md"></div>
-        
-        {/* Candles */}
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="absolute z-10" style={{ bottom: '36px', left: `${(i + 1) * 56 - 20}px` }}>
-            {/* Candle */}
-            <div className="w-3 h-16 bg-gold-300 rounded-sm mx-auto"></div>
-            
-            {/* Flame */}
-            <div className={`candle-flame absolute -top-8 left-1/2 -translate-x-1/2 ${candlesBlown ? 'animate-blow' : 'animate-flame'}`}>
-              <div className="w-4 h-8 bg-gold-500 rounded-full blur-[2px]"></div>
-              <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-4 bg-love-400 rounded-full blur-[1px]"></div>
-            </div>
-          </div>
-        ))}
       </div>
       
       <div className="mt-12 text-center">
