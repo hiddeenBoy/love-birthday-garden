@@ -103,10 +103,22 @@
   height: 10px;
   border-radius: 50%;
   opacity: 0;
+  z-index: 20;
 }
 
 .confetti-animation {
   animation: confetti 3s ease-out forwards;
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
 }
 
 @keyframes blurIn {
@@ -122,4 +134,21 @@
 
 .blur-in {
   animation: blurIn 1.5s ease-out forwards;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.bg-gold-gradient {
+  background: linear-gradient(to right, #f7b733, #fc4a1a);
 }

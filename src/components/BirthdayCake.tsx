@@ -39,16 +39,19 @@ const BirthdayCake = ({ onBlowCandles }: BirthdayCakeProps) => {
     
     if (!container) return;
     
-    for (let i = 0; i < 50; i++) {
+    // Clear any existing confetti
+    container.innerHTML = '';
+    
+    for (let i = 0; i < 100; i++) {
       const confetti = document.createElement('div');
       confetti.className = 'confetti';
       confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.left = `${Math.random() * 300 - 100}px`;
-      confetti.style.top = `${Math.random() * 20 - 50}px`;
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.top = `-20px`;
       confetti.style.width = `${Math.random() * 8 + 5}px`;
       confetti.style.height = confetti.style.width;
       confetti.style.opacity = '1';
-      confetti.style.animationDelay = `${Math.random() * 1}s`;
+      confetti.style.animationDelay = `${Math.random() * 0.5}s`;
       confetti.classList.add('confetti-animation');
       
       container.appendChild(confetti);
@@ -64,7 +67,7 @@ const BirthdayCake = ({ onBlowCandles }: BirthdayCakeProps) => {
   
   return (
     <div className="relative cake-container w-full max-w-sm mx-auto mt-8 mb-12 pb-8">
-      <div id="confetti-container" className="absolute top-0 left-1/2 -translate-x-1/2 w-60 h-60 z-10"></div>
+      <div id="confetti-container" className="absolute inset-0 overflow-hidden pointer-events-none z-10"></div>
       
       <div className="cake-plate relative mx-auto w-64 h-64 animate-float">
         {/* Cake */}
@@ -87,15 +90,15 @@ const BirthdayCake = ({ onBlowCandles }: BirthdayCakeProps) => {
             ))}
           </div>
           
-          {/* Candles - Positioned on top of the cake */}
-          <div className="absolute w-full flex justify-center items-center" style={{ top: '-24px' }}>
+          {/* Candles - Positioned clearly on top of the cake */}
+          <div className="absolute w-full flex justify-center items-center -top-10">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="relative mx-2 z-10">
+              <div key={i} className="relative mx-3 z-10">
                 {/* Candle */}
                 <div className="w-3 h-16 bg-gold-300 rounded-sm"></div>
                 
                 {/* Flame */}
-                <div className={`candle-flame absolute -top-8 left-1/2 -translate-x-1/2 ${candlesBlown ? 'animate-blow' : 'animate-flame'}`}>
+                <div className={`candle-flame absolute -top-8 left-1/2 -translate-x-1/2 ${candlesBlown ? 'opacity-0 transition-opacity duration-500' : 'animate-pulse'}`}>
                   <div className="w-4 h-8 bg-gold-500 rounded-full blur-[2px]"></div>
                   <div className="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-4 bg-love-400 rounded-full blur-[1px]"></div>
                 </div>
