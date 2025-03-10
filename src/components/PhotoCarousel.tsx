@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
 
 interface Photo {
   id: number;
@@ -51,25 +51,24 @@ const carouselPhotos: Photo[] = [
 
 const PhotoCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovering, setIsHovering] = useState(false);
-  const [hoveredPhoto, setHoveredPhoto] = useState<Photo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+  const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
 
   // Auto-scroll functionality
   useEffect(() => {
-    if (!isHovering) {
+    if (!isAutoScrollPaused && !isModalOpen) {
       startAutoScroll();
     } else {
       stopAutoScroll();
     }
 
     return () => {
-      if (autoScrollRef.current) {
-        clearInterval(autoScrollRef.current);
-      }
+      stopAutoScroll();
     };
-  }, [isHovering]);
+  }, [isAutoScrollPaused, isModalOpen]);
 
   const startAutoScroll = () => {
     autoScrollRef.current = setInterval(() => {
@@ -106,15 +105,14 @@ const PhotoCarousel = () => {
     goToSlide(newIndex);
   };
 
-  // Handle photo hover
-  const handlePhotoHover = (photo: Photo) => {
-    setIsHovering(true);
-    setHoveredPhoto(photo);
+  // Handle photo click to open modal
+  const handlePhotoClick = (photo: Photo) => {
+    setSelectedPhoto(photo);
+    setIsModalOpen(true);
   };
 
-  const handlePhotoLeave = () => {
-    setIsHovering(false);
-    setHoveredPhoto(null);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   // Sync carousel scroll with active index
@@ -136,7 +134,11 @@ const PhotoCarousel = () => {
       </div>
 
       {/* Main Carousel Container */}
-      <div className="relative overflow-hidden">
+      <div 
+        className="relative overflow-hidden"
+        onMouseEnter={() => setIsAutoScrollPaused(true)}
+        onMouseLeave={() => setIsAutoScrollPaused(false)}
+      >
         {/* Navigation Buttons */}
         <button 
           onClick={handlePrev} 
@@ -168,10 +170,7 @@ const PhotoCarousel = () => {
               <div 
                 className="carousel-card relative w-full max-w-lg mx-auto transition-all duration-300"
                 style={{ transform: `scale(${activeIndex === index ? 1 : 0.9})` }}
-                onMouseEnter={() => handlePhotoHover(photo)}
-                onMouseLeave={handlePhotoLeave}
-                onTouchStart={() => handlePhotoHover(photo)}
-                onTouchEnd={handlePhotoLeave}
+                onClick={() => handlePhotoClick(photo)}
               >
                 <div className="relative aspect-video overflow-hidden rounded-xl border-4 border-white shadow-xl">
                   <img
@@ -210,31 +209,34 @@ const PhotoCarousel = () => {
         </div>
       </div>
       
-      {/* Enlarged Photo Overlay */}
-      {isHovering && hoveredPhoto && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity" onClick={handlePhotoLeave}>
-          <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-xl p-2 shadow-2xl transform transition-transform duration-300 scale-in-center" onClick={(e) => e.stopPropagation()}>
+      {/* Modal for enlarged view */}
+      {isModalOpen && selectedPhoto && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm scale-in-center"
+          onClick={handleCloseModal}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] bg-white rounded-xl p-2 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              onClick={handlePhotoLeave}
+              onClick={handleCloseModal}
               className="absolute right-4 top-4 z-10 bg-white/80 hover:bg-white p-2 rounded-full shadow-md text-love-600 transition-all"
               aria-label="Close enlarged view"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 6L6 18"></path>
-                <path d="M6 6L18 18"></path>
-              </svg>
+              <X size={24} />
             </button>
             
             <div className="rounded-lg overflow-hidden">
               <img 
-                src={hoveredPhoto.src} 
-                alt={hoveredPhoto.alt}
+                src={selectedPhoto.src} 
+                alt={selectedPhoto.alt}
                 className="max-h-[70vh] object-contain w-full"
               />
             </div>
             
             <div className="p-6 bg-white text-center">
-              <h3 className="text-xl font-display font-bold text-love-700 mb-2">{hoveredPhoto.alt}</h3>
+              <h3 className="text-xl font-display font-bold text-love-700 mb-2">{selectedPhoto.alt}</h3>
               <p className="text-love-600">Every picture tells our story, a journey filled with love, laughter, and adventure.</p>
             </div>
           </div>
