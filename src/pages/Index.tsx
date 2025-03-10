@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
-import MusicPlayer from "@/components/MusicPlayer";
-import BirthdayCake from "@/components/BirthdayCake";
-import PhotoGallery from "@/components/PhotoGallery";
-import BirthdayLetter from "@/components/BirthdayLetter";
-import { Heart, Sparkles } from "lucide-react";
+
+import { useState, useEffect } from 'react';
+import MusicPlayer from '@/components/MusicPlayer';
+import BirthdayCake from '@/components/BirthdayCake';
+import PhotoGallery from '@/components/PhotoGallery';
+import PhotoCarousel from '@/components/PhotoCarousel';
+import BirthdayLetter from '@/components/BirthdayLetter';
+import { Heart, Sparkles } from 'lucide-react';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -104,6 +106,10 @@ const Index = () => {
 
         <div className="animate-fade-in" style={{ animationDelay: "1s" }}>
           <PhotoGallery />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: '1.2s' }}>
+          <PhotoCarousel />
         </div>
       </main>
 
