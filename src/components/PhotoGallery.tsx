@@ -8,7 +8,7 @@ interface Photo {
   rotation: number;
 }
 
-// Updated photos array with the user's image and some Unsplash placeholders
+// Updated photos array with all Pexels images
 const placeholderPhotos: Photo[] = [
   {
     id: 1,
@@ -18,31 +18,31 @@ const placeholderPhotos: Photo[] = [
   },
   {
     id: 2,
-    src: 'https://images.unsplash.com/photo-1558470598-a5dda9640f68',
+    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     alt: 'Happy couple moment',
     rotation: 2
   },
   {
     id: 3,
-    src: 'https://images.unsplash.com/photo-1530653333484-8e3c8a2b5cea',
+    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     alt: 'Beautiful sunset together',
     rotation: -2
   },
   {
     id: 4,
-    src: 'https://images.unsplash.com/photo-1542378151504-0361364c1ec3',
+    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     alt: 'Special date night',
     rotation: 3
   },
   {
     id: 5,
-    src: 'https://images.unsplash.com/photo-1523301343968-6a6ebf63c672',
+    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     alt: 'Favorite adventure',
     rotation: -1
   },
   {
     id: 6,
-    src: 'https://images.unsplash.com/photo-1494774157365-9e04c6720e47',
+    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
     alt: 'Beautiful memory',
     rotation: 2
   }
