@@ -5,11 +5,21 @@ import BirthdayCake from '@/components/BirthdayCake';
 import PhotoGallery from '@/components/PhotoGallery';
 import PhotoCarousel from '@/components/PhotoCarousel';
 import BirthdayLetter from '@/components/BirthdayLetter';
+import CountdownTimer from '@/components/CountdownTimer';
+import RelationshipTimeline from '@/components/RelationshipTimeline';
+import VirtualGift from '@/components/VirtualGift';
+import SpotifyPlaylist from '@/components/SpotifyPlaylist';
+import LoveMap from '@/components/LoveMap';
+import Fireworks from '@/components/Fireworks';
 import { Heart, Sparkles } from 'lucide-react';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [letterRevealed, setLetterRevealed] = useState(false);
+
+  // Calculate next birthday date (1 year from now)
+  const nextBirthdayDate = new Date();
+  nextBirthdayDate.setFullYear(nextBirthdayDate.getFullYear() + 1);
 
   useEffect(() => {
     // Simulate loading time for smoother intro animation
@@ -97,6 +107,14 @@ const Index = () => {
           <BirthdayCake onBlowCandles={handleBlowCandles} />
         </div>
 
+        <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
+          <CountdownTimer 
+            targetDate={nextBirthdayDate} 
+            title="Until Our Next Celebration"
+            description="Every moment until then is precious"
+          />
+        </div>
+
         <div
           className="my-16 animate-fade-in"
           style={{ animationDelay: "0.8s" }}
@@ -105,11 +123,35 @@ const Index = () => {
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "1s" }}>
+          <RelationshipTimeline />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.1s" }}>
           <PhotoGallery />
         </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: '1.2s' }}>
+        <div className="animate-fade-in" style={{ animationDelay: "1.2s" }}>
           <PhotoCarousel />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.3s" }}>
+          <VirtualGift />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.4s" }}>
+          <SpotifyPlaylist 
+            playlistId="37i9dQZF1DX0MLFaUdXnjA" // Replace with your actual playlist ID
+            title="Our Love Playlist"
+            description="Songs that define our journey together"
+          />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.5s" }}>
+          <LoveMap />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.6s" }}>
+          <Fireworks />
         </div>
       </main>
 
