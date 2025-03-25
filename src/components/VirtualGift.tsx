@@ -152,18 +152,21 @@ const VirtualGift = () => {
             />
           </div>
 
-          <style jsx>{`
-            @keyframes fall {
-              0% {
-                transform: translateY(-10px) rotate(0deg);
-                opacity: 1;
+          {/* Using a regular style tag instead of style jsx */}
+          <style>
+            {`
+              @keyframes fall {
+                0% {
+                  transform: translateY(-10px) rotate(0deg);
+                  opacity: 1;
+                }
+                100% {
+                  transform: translateY(100px) rotate(360deg);
+                  opacity: 0;
+                }
               }
-              100% {
-                transform: translateY(100px) rotate(360deg);
-                opacity: 0;
-              }
-            }
-          `}</style>
+            `}
+          </style>
         </DialogContent>
       </Dialog>
     </div>
