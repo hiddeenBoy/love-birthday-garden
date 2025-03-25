@@ -1,21 +1,22 @@
-
-import { useState, useEffect } from 'react';
-import MusicPlayer from '@/components/MusicPlayer';
-import BirthdayCake from '@/components/BirthdayCake';
-import PhotoGallery from '@/components/PhotoGallery';
-import PhotoCarousel from '@/components/PhotoCarousel';
-import BirthdayLetter from '@/components/BirthdayLetter';
-import CountdownTimer from '@/components/CountdownTimer';
-import RelationshipTimeline from '@/components/RelationshipTimeline';
-import VirtualGift from '@/components/VirtualGift';
-import SpotifyPlaylist from '@/components/SpotifyPlaylist';
-import LoveMap from '@/components/LoveMap';
-import Fireworks from '@/components/Fireworks';
-import { Heart, Sparkles } from 'lucide-react';
+import { useState, useEffect } from "react";
+import MusicPlayer from "@/components/MusicPlayer";
+import BirthdayCake from "@/components/BirthdayCake";
+import PhotoGallery from "@/components/PhotoGallery";
+import PhotoCarousel from "@/components/PhotoCarousel";
+import BirthdayLetter from "@/components/BirthdayLetter";
+import CountdownTimer from "@/components/CountdownTimer";
+import RelationshipTimeline from "@/components/RelationshipTimeline";
+import VirtualGift from "@/components/VirtualGift";
+import SpotifyPlaylist from "@/components/SpotifyPlaylist";
+import LoveMap from "@/components/LoveMap";
+import Fireworks from "@/components/Fireworks";
+import { Heart, Sparkles } from "lucide-react";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [letterRevealed, setLetterRevealed] = useState(false);
+  const [globalAudioPlaying, setGlobalAudioPlaying] = useState(true);
+  const [playlistPlaying, setPlaylistPlaying] = useState(false);
 
   // Calculate next birthday date (1 year from now)
   const nextBirthdayDate = new Date();
@@ -33,6 +34,20 @@ const Index = () => {
   const handleBlowCandles = () => {
     // Reveal the birthday letter when candles are blown
     setLetterRevealed(true);
+  };
+
+  const handlePlaylistPlay = () => {
+    setPlaylistPlaying(true);
+    setGlobalAudioPlaying(false); // Stop global music when playlist starts
+  };
+
+  const handlePlaylistStop = () => {
+    setPlaylistPlaying(false);
+    setGlobalAudioPlaying(true); // Resume global music when playlist stops
+  };
+
+  const handleGlobalAudioStop = () => {
+    setGlobalAudioPlaying(false);
   };
 
   if (isLoading) {
@@ -107,19 +122,18 @@ const Index = () => {
           <BirthdayCake onBlowCandles={handleBlowCandles} />
         </div>
 
-        <div className="animate-fade-in" style={{ animationDelay: "0.7s" }}>
-          <CountdownTimer 
-            targetDate={nextBirthdayDate} 
+        <div
+          className="my-16 animate-fade-in"
+          style={{ animationDelay: "0.7s" }}
+        >
+          <BirthdayLetter isOpen={letterRevealed} />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: "0.9s" }}>
+          <CountdownTimer
+            targetDate={nextBirthdayDate}
             title="Until Our Next Celebration"
             description="Every moment until then is precious"
           />
-        </div>
-
-        <div
-          className="my-16 animate-fade-in"
-          style={{ animationDelay: "0.8s" }}
-        >
-          <BirthdayLetter isOpen={letterRevealed} />
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "1s" }}>
@@ -139,10 +153,12 @@ const Index = () => {
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "1.4s" }}>
-          <SpotifyPlaylist 
+          <SpotifyPlaylist
             playlistId="37i9dQZF1DX0MLFaUdXnjA" // Replace with your actual playlist ID
             title="Our Love Playlist"
             description="Songs that define our journey together"
+            onPlay={handlePlaylistPlay}
+            onStop={handlePlaylistStop}
           />
         </div>
 
@@ -163,8 +179,14 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* Background music */}
-      <MusicPlayer audioSrc="/love.mp3" autoPlay={true} />
+      {/* Background music - only render if global audio should play */}
+      {globalAudioPlaying && (
+        <MusicPlayer
+          audioSrc="/love.mp3"
+          autoPlay={true}
+          onStop={handleGlobalAudioStop}
+        />
+      )}
     </div>
   );
 };
