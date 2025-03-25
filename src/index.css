@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -52,18 +52,20 @@
 
   body {
     @apply bg-background text-foreground font-sans overflow-x-hidden;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Playfair Display", serif;
   }
 }
 
 /* Custom Styles */
-.glass-morphism {
-  @apply bg-white/30 backdrop-blur-md border border-white/30 shadow-lg;
-}
 
 .cake-container {
   perspective: 1000px;
@@ -108,6 +110,59 @@
 .confetti-animation {
   animation: confetti 3s ease-out forwards;
 }
+@layer components {
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes heart-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg) scale(0.6);
+    opacity: 1;
+  }
+  25% {
+    transform: translateY(25px) rotate(90deg) scale(1);
+  }
+  50% {
+    transform: translateY(50px) rotate(180deg) scale(0.8);
+  }
+  75% {
+    transform: translateY(75px) rotate(270deg) scale(1);
+  }
+  100% {
+    transform: translateY(100px) rotate(360deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.heart-confetti {
+  position: absolute;
+  display: inline-block;
+  font-style: normal;
+  animation: heart-fall 5s ease-in-out forwards;
+  line-height: 1;
+  pointer-events: none;
+}
 
 @keyframes confetti {
   0% {
@@ -136,7 +191,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -159,7 +215,8 @@
 
 /* Staggered animation for photos */
 @keyframes photo-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(var(--rotation, 0deg));
   }
   50% {
@@ -215,34 +272,31 @@ html {
   display: none;
 }
 
-
 @layer components {
-
-  
   .neo-morphism {
     @apply bg-player-light shadow-[5px_5px_15px_rgba(0,0,0,0.05),-5px_-5px_15px_rgba(255,255,255,0.6)] rounded-xl transition-all duration-300;
   }
-  
+
   .player-progress {
     @apply h-1 bg-gray-200 rounded-full overflow-hidden relative;
   }
-  
+
   .player-progress-bar {
     @apply h-full bg-love-500 absolute left-0 top-0 transition-all duration-100 rounded-full;
   }
-  
+
   .player-button {
     @apply flex items-center justify-center rounded-full transition-all duration-200 focus:outline-none;
   }
-  
+
   .player-icon-button {
     @apply w-10 h-10 hover:bg-black/5 active:bg-black/10 rounded-full flex items-center justify-center transition-all duration-200;
   }
-  
+
   .album-rotate {
     @apply rounded-full bg-gray-800 shadow-lg animate-spin-slow;
   }
-  
+
   .waveform-bar {
     @apply w-1 bg-love-600 rounded-full mx-[1px] animate-waveform;
   }

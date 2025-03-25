@@ -133,8 +133,9 @@ export default {
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
         float: {
-          "0%, 100%": { transform: "translateY(0)" },
+          "0%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-10px)" },
+          "100%": { transform: "translateY(0px)" },
         },
         "scale-in": {
           "0%": { transform: "scale(0.9)", opacity: "0" },
@@ -184,7 +185,7 @@ export default {
         "fade-out": "fade-out 0.6s ease-out",
         "slide-up": "slide-up 0.8s ease-out",
         "slide-down": "slide-down 0.8s ease-out",
-        float: "float 6s ease-in-out infinite",
+        float: "float 3s ease-in-out infinite",
         "scale-in": "scale-in 0.5s ease-out",
         glow: "glow 2s ease-in-out infinite",
         flame: "flame 1.5s ease-in-out infinite",
