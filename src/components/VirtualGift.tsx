@@ -22,16 +22,18 @@ const VirtualGift = () => {
   }, [showDialog]);
 
   const handleOpenGift = () => {
-    console.log("Opening gift");
+    console.log("Opening gift - click handler triggered");
     if (!isOpening) {
       setIsOpening(true);
       
       // Simulate unwrapping animation
       setTimeout(() => {
+        console.log("Setting isOpen to true");
         setIsOpen(true);
         
         // Show confetti after gift is open
         setTimeout(() => {
+          console.log("Triggering confetti");
           createConfetti();
         }, 300); // Small delay for better visual effect
       }, 1000);
@@ -119,6 +121,7 @@ const VirtualGift = () => {
                   isOpening ? 'opacity-0 scale-150' : 'opacity-100'
                 } cursor-pointer`} 
                 onClick={handleOpenGift}
+                style={{ cursor: 'pointer' }}
                 aria-label="Unwrap gift"
               >
                 <div className="relative">
@@ -155,11 +158,10 @@ const VirtualGift = () => {
             {/* Confetti container */}
             <div 
               id="gift-confetti-container" 
-              className="absolute inset-0 pointer-events-none overflow-hidden"
+              className="absolute inset-0 pointer-events-none overflow-hidden z-10"
             />
           </div>
 
-          {/* Using a regular style tag instead of style jsx */}
           <style>
             {`
               @keyframes fall {
@@ -171,6 +173,14 @@ const VirtualGift = () => {
                   transform: translateY(100px) rotate(360deg);
                   opacity: 0;
                 }
+              }
+              
+              .confetti {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                animation: fall 3s linear forwards;
               }
             `}
           </style>
