@@ -22,6 +22,7 @@ const VirtualGift = () => {
   }, [showDialog]);
 
   const handleOpenGift = () => {
+    console.log("Opening gift");
     if (!isOpening) {
       setIsOpening(true);
       
@@ -30,14 +31,20 @@ const VirtualGift = () => {
         setIsOpen(true);
         
         // Show confetti after gift is open
-        createConfetti();
+        setTimeout(() => {
+          createConfetti();
+        }, 300); // Small delay for better visual effect
       }, 1000);
     }
   };
 
   const createConfetti = () => {
+    console.log("Creating confetti");
     const confettiContainer = document.getElementById('gift-confetti-container');
-    if (!confettiContainer) return;
+    if (!confettiContainer) {
+      console.log("Confetti container not found");
+      return;
+    }
     
     // Clear any existing confetti
     confettiContainer.innerHTML = '';
