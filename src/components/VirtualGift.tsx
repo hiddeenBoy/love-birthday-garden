@@ -48,14 +48,16 @@ const VirtualGift = () => {
     
     for (let i = 0; i < confettiCount; i++) {
       const confetti = document.createElement('div');
-      confetti.className = 'confetti confetti-animation';
+      confetti.className = 'confetti';
       confetti.style.left = `${Math.random() * 100}%`;
       confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
       confetti.style.width = `${Math.random() * 10 + 5}px`;
       confetti.style.height = `${Math.random() * 10 + 5}px`;
       confetti.style.opacity = '1';
+      confetti.style.position = 'absolute';
+      confetti.style.borderRadius = '50%';
+      confetti.style.animation = `fall ${Math.random() * 2 + 2}s linear forwards`;
       confetti.style.animationDelay = `${Math.random() * 0.5}s`;
-      confetti.style.animationDuration = `${Math.random() * 2 + 2}s`;
       
       confettiContainer.appendChild(confetti);
     }
@@ -108,8 +110,9 @@ const VirtualGift = () => {
               <div 
                 className={`absolute inset-0 bg-love-100 flex items-center justify-center transition-all duration-1000 ${
                   isOpening ? 'opacity-0 scale-150' : 'opacity-100'
-                }`} 
+                } cursor-pointer`} 
                 onClick={handleOpenGift}
+                aria-label="Unwrap gift"
               >
                 <div className="relative">
                   <Package 
@@ -148,6 +151,19 @@ const VirtualGift = () => {
               className="absolute inset-0 pointer-events-none overflow-hidden"
             />
           </div>
+
+          <style jsx>{`
+            @keyframes fall {
+              0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(100px) rotate(360deg);
+                opacity: 0;
+              }
+            }
+          `}</style>
         </DialogContent>
       </Dialog>
     </div>
