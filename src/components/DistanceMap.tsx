@@ -79,11 +79,11 @@ const DistanceMap = () => {
       <div className="relative">
         {/* The map background */}
         <div className="relative aspect-[16/9] overflow-hidden rounded-xl glass-morphism p-4 shadow-lg">
-          <div className="absolute inset-0 m-4 rounded-lg bg-love-100/50 overflow-hidden">
+          <div className="absolute inset-0 m-4 rounded-lg overflow-hidden">
             <img 
-              src="https://images.pexels.com/photos/351264/pexels-photo-351264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
+              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80" 
               alt="World map" 
-              className="w-full h-full object-cover opacity-30"
+              className="w-full h-full object-cover"
             />
             
             {/* The connecting line between points */}
