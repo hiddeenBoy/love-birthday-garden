@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import MusicPlayer from "@/components/MusicPlayer";
 import BirthdayCake from "@/components/BirthdayCake";
@@ -9,6 +10,7 @@ import RelationshipTimeline from "@/components/RelationshipTimeline";
 import VirtualGift from "@/components/VirtualGift";
 import SpotifyPlaylist from "@/components/SpotifyPlaylist";
 import LoveMap from "@/components/LoveMap";
+import DistanceMap from "@/components/DistanceMap"; // Import the new component
 import Fireworks from "@/components/Fireworks";
 import { Heart, Sparkles } from "lucide-react";
 
@@ -128,6 +130,7 @@ const Index = () => {
         >
           <BirthdayLetter isOpen={letterRevealed} />
         </div>
+        
         <div className="animate-fade-in" style={{ animationDelay: "0.9s" }}>
           <CountdownTimer
             targetDate={nextBirthdayDate}
@@ -167,6 +170,10 @@ const Index = () => {
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "1.6s" }}>
+          <DistanceMap />
+        </div>
+
+        <div className="animate-fade-in" style={{ animationDelay: "1.7s" }}>
           <Fireworks />
         </div>
       </main>
