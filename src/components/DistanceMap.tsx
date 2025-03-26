@@ -1,12 +1,25 @@
 
-import { useState, useEffect } from 'react';
-import { Map, Route, Navigation, MapPin } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Map as MapIcon, Route, Navigation, MapPin } from 'lucide-react';
+import { GoogleMap, useJsApiLoader, Marker, Polyline } from '@react-google-maps/api';
 
 interface Coordinate {
   lat: number;
   lng: number;
   label: string;
 }
+
+// Center on India
+const INDIA_CENTER = {
+  lat: 20.5937,
+  lng: 78.9629
+};
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+  borderRadius: '0.5rem'
+};
 
 const DistanceMap = () => {
   // Random initial coordinates - you can replace the "You" coordinates later
@@ -15,18 +28,25 @@ const DistanceMap = () => {
     partner: Coordinate;
   }>({
     you: {
-      lat: 37.7749,
-      lng: -122.4194,
-      label: "You"
+      lat: 19.0760,
+      lng: 72.8777,
+      label: "You" // Mumbai
     },
     partner: {
-      lat: 40.7128,
-      lng: -74.0060,
-      label: "Partner"
+      lat: 28.6139,
+      lng: 77.2090,
+      label: "Partner" // Delhi
     }
   });
 
   const [distance, setDistance] = useState<number>(0);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg", // This is a public demo key
+    id: 'google-map-script'
+  });
 
   // Calculate distance between two points using Haversine formula
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -64,11 +84,27 @@ const DistanceMap = () => {
     }));
   };
 
+  const onMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+    setMap(map);
+    
+    // Fit bounds to include both markers
+    const bounds = new google.maps.LatLngBounds();
+    bounds.extend(new google.maps.LatLng(coordinates.you.lat, coordinates.you.lng));
+    bounds.extend(new google.maps.LatLng(coordinates.partner.lat, coordinates.partner.lng));
+    map.fitBounds(bounds);
+  }, [coordinates]);
+
+  const onMapUnmount = useCallback(() => {
+    setMap(null);
+    mapRef.current = null;
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto my-16 px-4">
       <div className="text-center mb-8">
         <h2 className="font-display text-3xl font-bold text-love-800 mb-2 flex items-center justify-center">
-          <Map className="mr-2 text-love-600" size={24} />
+          <MapIcon className="mr-2 text-love-600" size={24} />
           Distance Between Us
         </h2>
         <p className="text-love-600 text-lg max-w-md mx-auto">
@@ -77,66 +113,100 @@ const DistanceMap = () => {
       </div>
 
       <div className="relative">
-        {/* The map background */}
+        {/* The map container */}
         <div className="relative aspect-[16/9] overflow-hidden rounded-xl glass-morphism p-4 shadow-lg">
           <div className="absolute inset-0 m-4 rounded-lg overflow-hidden">
-            <img 
-              src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80" 
-              alt="World map" 
-              className="w-full h-full object-cover"
-            />
+            {loadError && (
+              <div className="w-full h-full flex items-center justify-center bg-love-100">
+                <p className="text-love-800">Error loading maps</p>
+              </div>
+            )}
             
-            {/* The connecting line between points */}
-            <svg className="absolute inset-0 w-full h-full">
-              <line 
-                x1={`${(coordinates.you.lng + 180) / 360 * 100}%`} 
-                y1={`${(90 - coordinates.you.lat) / 180 * 100}%`}
-                x2={`${(coordinates.partner.lng + 180) / 360 * 100}%`}
-                y2={`${(90 - coordinates.partner.lat) / 180 * 100}%`}
-                stroke="#F43F75"
-                strokeWidth="3"
-                strokeDasharray="5,5"
-                className="animate-pulse"
-              />
-            </svg>
+            {!isLoaded && (
+              <div className="w-full h-full flex items-center justify-center bg-love-100">
+                <p className="text-love-800">Loading maps...</p>
+              </div>
+            )}
+            
+            {isLoaded && (
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={INDIA_CENTER}
+                zoom={5}
+                onLoad={onMapLoad}
+                onUnmount={onMapUnmount}
+                options={{
+                  fullscreenControl: false,
+                  streetViewControl: false,
+                  mapTypeControl: false,
+                  zoomControl: true
+                }}
+              >
+                {/* Markers for locations */}
+                <Marker
+                  position={{ lat: coordinates.you.lat, lng: coordinates.you.lng }}
+                  label={{ text: "You", color: "#ffffff" }}
+                  icon={{
+                    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+                    fillColor: "#F43F75",
+                    fillOpacity: 1,
+                    strokeWeight: 1,
+                    strokeColor: "#ffffff",
+                    scale: 2,
+                    anchor: new google.maps.Point(12, 22),
+                  }}
+                />
+                
+                <Marker
+                  position={{ lat: coordinates.partner.lat, lng: coordinates.partner.lng }}
+                  label={{ text: "Partner", color: "#ffffff" }}
+                  icon={{
+                    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+                    fillColor: "#FFD34D",
+                    fillOpacity: 1,
+                    strokeWeight: 1,
+                    strokeColor: "#ffffff",
+                    scale: 2,
+                    anchor: new google.maps.Point(12, 22),
+                  }}
+                />
+                
+                {/* Line connecting the two points */}
+                <Polyline
+                  path={[
+                    { lat: coordinates.you.lat, lng: coordinates.you.lng },
+                    { lat: coordinates.partner.lat, lng: coordinates.partner.lng }
+                  ]}
+                  options={{
+                    strokeColor: "#F43F75",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 3,
+                    geodesic: true,
+                    icons: [
+                      {
+                        icon: {
+                          path: "M 0,-1 0,1",
+                          strokeOpacity: 1,
+                          scale: 4,
+                        },
+                        offset: "0",
+                        repeat: "20px",
+                      },
+                    ],
+                  }}
+                />
+              </GoogleMap>
+            )}
           </div>
           
-          {/* Location markers */}
-          {Object.entries(coordinates).map(([key, location]) => (
-            <div 
-              key={key}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
-              style={{ 
-                left: `${((location.lng + 180) / 360) * 100}%`, 
-                top: `${((90 - location.lat) / 180) * 100}%` 
-              }}
-            >
-              <div className="relative group">
-                <MapPin 
-                  size={36} 
-                  className={`${key === 'you' ? 'text-love-600' : 'text-gold-600'} filter drop-shadow-md`} 
-                  fill={key === 'you' ? "#F43F75" : "#FFD34D"}
-                />
-                <span className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-ping" />
-                
-                {/* Label tooltip */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-2 py-1 rounded shadow-md text-sm text-love-800 pointer-events-none">
-                  {location.label}
-                  <br />
-                  {location.lat.toFixed(2)}, {location.lng.toFixed(2)}
-                </div>
-              </div>
-            </div>
-          ))}
-          
           {/* Distance indicator */}
-          <div className="absolute top-3 right-3 bg-white/80 rounded-lg px-3 py-1 shadow-md flex items-center">
+          <div className="absolute top-3 right-3 bg-white/80 rounded-lg px-3 py-1 shadow-md flex items-center z-10">
             <Route className="text-love-600 mr-2" size={18} />
             <span className="font-medium text-love-800">{distance} km</span>
           </div>
           
           {/* Instructions for later */}
-          <div className="absolute bottom-3 left-3 bg-white/80 rounded-lg px-3 py-1 shadow-md text-xs text-love-800">
+          <div className="absolute bottom-3 left-3 bg-white/80 rounded-lg px-3 py-1 shadow-md text-xs text-love-800 z-10">
             <p>You can update your coordinates later</p>
           </div>
         </div>
