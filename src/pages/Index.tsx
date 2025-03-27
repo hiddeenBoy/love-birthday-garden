@@ -4,13 +4,14 @@ import MusicPlayer from "@/components/MusicPlayer";
 import BirthdayCake from "@/components/BirthdayCake";
 import PhotoGallery from "@/components/PhotoGallery";
 import PhotoCarousel from "@/components/PhotoCarousel";
+import MomentCarousel from "@/components/carousel/MomentCarousel";
 import BirthdayLetter from "@/components/BirthdayLetter";
 import CountdownTimer from "@/components/CountdownTimer";
 import RelationshipTimeline from "@/components/RelationshipTimeline";
 import VirtualGift from "@/components/VirtualGift";
 import SpotifyPlaylist from "@/components/SpotifyPlaylist";
 import LoveMap from "@/components/LoveMap";
-import DistanceMap from "@/components/DistanceMap"; // Import the new component
+import DistanceMap from "@/components/DistanceMap";
 import Fireworks from "@/components/Fireworks";
 import { Heart, Sparkles } from "lucide-react";
 
@@ -149,6 +150,10 @@ const Index = () => {
 
         <div className="animate-fade-in" style={{ animationDelay: "1.2s" }}>
           <PhotoCarousel />
+        </div>
+        
+        <div className="animate-fade-in" style={{ animationDelay: "1.25s" }}>
+          <MomentCarousel />
         </div>
 
         <div className="animate-fade-in" style={{ animationDelay: "1.3s" }}>

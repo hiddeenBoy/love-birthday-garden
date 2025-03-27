@@ -9,42 +9,42 @@ interface Photo {
   rotation: number;
 }
 
-// Using the same photos as PhotoGallery
+// Using different test images for each photo
 const carouselPhotos: Photo[] = [
   {
     id: 1,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Main celebration photo',
+    src: 'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg',
+    alt: 'First anniversary dinner',
     rotation: -3
   },
   {
     id: 2,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Happy couple moment',
+    src: 'https://images.pexels.com/photos/169193/pexels-photo-169193.jpeg',
+    alt: 'Beach vacation in Goa',
     rotation: 2
   },
   {
     id: 3,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Beautiful sunset together',
+    src: 'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg',
+    alt: 'Beautiful sunset in Chennai',
     rotation: -2
   },
   {
     id: 4,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Special date night',
+    src: 'https://images.pexels.com/photos/5874231/pexels-photo-5874231.jpeg',
+    alt: 'Hiking trip to the mountains',
     rotation: 3
   },
   {
     id: 5,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Favorite adventure',
+    src: 'https://images.pexels.com/photos/1482476/pexels-photo-1482476.jpeg',
+    alt: 'Stargazing night picnic',
     rotation: -1
   },
   {
     id: 6,
-    src: 'https://images.pexels.com/photos/3217513/pexels-photo-3217513.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-    alt: 'Beautiful memory',
+    src: 'https://images.pexels.com/photos/1252983/pexels-photo-1252983.jpeg',
+    alt: 'Birthday celebration at home',
     rotation: 2
   }
 ];
