@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Map as MapIcon, Route, Navigation, MapPin } from "lucide-react";
+import { Map as MapIcon, Route, Navigation } from "lucide-react";
 import {
   GoogleMap,
   useJsApiLoader,
