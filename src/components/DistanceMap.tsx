@@ -11,9 +11,9 @@ interface Coordinate {
   label: string;
 }
 
-// Canvas dimensions
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 400;
+// SVG viewBox dimensions
+const SVG_WIDTH = 450;
+const SVG_HEIGHT = 400;
 
 const DistanceMap = () => {
   // Fixed coordinates - Mumbai and Delhi
@@ -56,6 +56,23 @@ const DistanceMap = () => {
     return Math.round(distance);
   };
 
+  // Convert geographic coordinates to SVG coordinates
+  // These are approximate conversions for India's geography to fit in our SVG
+  const geoToSvgCoordinates = (lat: number, lng: number) => {
+    // India's approximate bounds
+    const minLat = 8; // Southern tip
+    const maxLat = 37; // Northern tip
+    const minLng = 68; // Western edge
+    const maxLng = 97; // Eastern edge
+    
+    // Convert to percentage of India's bounds
+    const x = ((lng - minLng) / (maxLng - minLng)) * SVG_WIDTH;
+    // Flip y-axis (SVG 0,0 is top-left)
+    const y = (1 - (lat - minLat) / (maxLat - minLat)) * SVG_HEIGHT;
+    
+    return { x, y };
+  };
+
   useEffect(() => {
     // Calculate distance when component mounts
     const { you, partner } = coordinates;
@@ -72,9 +89,20 @@ const DistanceMap = () => {
   const showDistanceInfo = () => {
     toast({
       title: "Distance Information",
-      description: `The distance between ${coordinates.you.label} and ${coordinates.partner.label} is ${distance} kilometers.`,
+      description: `The distance between ${coordinates.you.label} (Mumbai) and ${coordinates.partner.label} (Delhi) is ${distance} kilometers.`,
     });
   };
+
+  // Get SVG coordinates for both locations
+  const youSvgCoords = geoToSvgCoordinates(
+    coordinates.you.lat,
+    coordinates.you.lng
+  );
+  
+  const partnerSvgCoords = geoToSvgCoordinates(
+    coordinates.partner.lat,
+    coordinates.partner.lng
+  );
 
   return (
     <div className="max-w-4xl mx-auto my-16 px-4">
@@ -92,47 +120,98 @@ const DistanceMap = () => {
         <CardHeader>
           <CardTitle className="text-center text-love-800">
             <Navigation className="inline mr-2 text-love-600" size={20} />
-            Our Locations
+            Our Locations on India Map
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Simple distance visualization */}
-          <div className="relative w-full h-[300px] bg-love-50 rounded-lg overflow-hidden">
-            {/* Fixed locations and connecting line */}
-            <div className="absolute inset-0 flex items-center justify-between px-16">
-              {/* You location */}
-              <div className="flex flex-col items-center">
-                <div className="mb-2 font-medium text-love-700">
-                  {coordinates.you.label}
-                </div>
-                <div className="bg-white p-2 rounded-full shadow-md">
-                  <MapPin size={32} className="text-love-600" fill="#FEECF3" />
-                </div>
-                <div className="mt-2 text-xs text-love-600">
-                  {coordinates.you.lat.toFixed(4)}, {coordinates.you.lng.toFixed(4)}
-                </div>
+          <div className="relative w-full h-[400px] bg-love-50 rounded-lg overflow-hidden">
+            {/* SVG Map of India */}
+            <svg 
+              viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} 
+              className="w-full h-full"
+            >
+              {/* Simplified outline of India */}
+              <path 
+                d="M100,50 L150,30 L200,40 L250,30 L280,50 L300,100 L350,130 L340,180 L300,220 L320,260 L300,290 L260,310 L240,350 L200,370 L160,350 L120,300 L100,250 L80,220 L60,180 L70,130 L90,100 L100,50"
+                fill="#E5DEFF"
+                stroke="#9b87f5"
+                strokeWidth="2"
+                className="opacity-70"
+              />
+              
+              {/* Connection line between points */}
+              <line 
+                x1={youSvgCoords.x} 
+                y1={youSvgCoords.y} 
+                x2={partnerSvgCoords.x} 
+                y2={partnerSvgCoords.y} 
+                stroke="#F43F75" 
+                strokeWidth="3" 
+                strokeDasharray="5,5" 
+              />
+              
+              {/* Distance label */}
+              <text 
+                x={(youSvgCoords.x + partnerSvgCoords.x) / 2} 
+                y={(youSvgCoords.y + partnerSvgCoords.y) / 2 - 10} 
+                fill="#1A1F2C" 
+                fontSize="12" 
+                fontWeight="bold" 
+                textAnchor="middle"
+              >
+                {distance} km
+              </text>
+              
+              {/* Mumbai marker (You) */}
+              <circle 
+                cx={youSvgCoords.x} 
+                cy={youSvgCoords.y} 
+                r="6" 
+                fill="#F43F75" 
+                stroke="white" 
+                strokeWidth="2"
+              />
+              <text 
+                x={youSvgCoords.x} 
+                y={youSvgCoords.y + 20} 
+                fill="#1A1F2C" 
+                fontSize="10" 
+                fontWeight="bold" 
+                textAnchor="middle"
+              >
+                Mumbai
+              </text>
+              
+              {/* Delhi marker (Partner) */}
+              <circle 
+                cx={partnerSvgCoords.x} 
+                cy={partnerSvgCoords.y} 
+                r="6" 
+                fill="#FFBD59" 
+                stroke="white" 
+                strokeWidth="2"
+              />
+              <text 
+                x={partnerSvgCoords.x} 
+                y={partnerSvgCoords.y + 20} 
+                fill="#1A1F2C" 
+                fontSize="10" 
+                fontWeight="bold" 
+                textAnchor="middle"
+              >
+                Delhi
+              </text>
+            </svg>
+            
+            {/* City labels overlay */}
+            <div className="absolute bottom-4 left-4 bg-white/80 p-2 rounded shadow-sm flex space-x-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-love-600 mr-1.5"></div>
+                <span className="text-xs font-medium">Mumbai ({coordinates.you.label})</span>
               </div>
-
-              {/* Distance line */}
-              <div className="flex-1 mx-4 relative">
-                <div className="h-1 bg-love-300 w-full"></div>
-                <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow text-love-700 font-bold flex items-center">
-                  <Route size={16} className="mr-1 text-love-500" />
-                  {distance} km
-                </div>
-              </div>
-
-              {/* Partner location */}
-              <div className="flex flex-col items-center">
-                <div className="mb-2 font-medium text-love-700">
-                  {coordinates.partner.label}
-                </div>
-                <div className="bg-white p-2 rounded-full shadow-md">
-                  <MapPin size={32} className="text-yellow-500" fill="#FFFBED" />
-                </div>
-                <div className="mt-2 text-xs text-love-600">
-                  {coordinates.partner.lat.toFixed(4)}, {coordinates.partner.lng.toFixed(4)}
-                </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full bg-yellow-500 mr-1.5"></div>
+                <span className="text-xs font-medium">Delhi ({coordinates.partner.label})</span>
               </div>
             </div>
           </div>
