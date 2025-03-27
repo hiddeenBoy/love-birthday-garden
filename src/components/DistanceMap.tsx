@@ -1,11 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Map as MapIcon, Route, Navigation } from "lucide-react";
-import {
-  GoogleMap,
-  useJsApiLoader,
-  Marker,
-  Polyline,
-} from "@react-google-maps/api";
+
+import { useState, useEffect } from "react";
+import { Map as MapIcon, Route, Navigation, MapPin } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 interface Coordinate {
   lat: number;
@@ -13,20 +9,20 @@ interface Coordinate {
   label: string;
 }
 
-// Center on India
-const INDIA_CENTER = {
-  lat: 20.5937,
-  lng: 78.9629,
-};
+// Map dimensions
+const MAP_WIDTH = 800;
+const MAP_HEIGHT = 480;
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "100%",
-  borderRadius: "0.5rem",
+// India's rough bounding box for the map
+const INDIA_BOUNDS = {
+  north: 37.0902,  // Northern-most latitude
+  south: 8.0678,   // Southern-most latitude
+  west: 68.0369,   // Western-most longitude
+  east: 97.4025    // Eastern-most longitude
 };
 
 const DistanceMap = () => {
-  // Random initial coordinates - you can replace the "You" coordinates later
+  // Random initial coordinates - Mumbai and Delhi
   const [coordinates, setCoordinates] = useState<{
     you: Coordinate;
     partner: Coordinate;
@@ -44,13 +40,7 @@ const DistanceMap = () => {
   });
 
   const [distance, setDistance] = useState<number>(0);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg", // This is a public demo key
-    id: "google-map-script",
-  });
+  const [isDragging, setIsDragging] = useState<string | null>(null);
 
   // Calculate distance between two points using Haversine formula
   const calculateDistance = (
@@ -85,40 +75,62 @@ const DistanceMap = () => {
     setDistance(calculatedDistance);
   }, [coordinates]);
 
-  // Function to update your coordinates (will be used later)
-  const updateYourCoordinates = (lat: number, lng: number) => {
-    setCoordinates((prev) => ({
+  // Convert latitude and longitude to pixel coordinates on the map
+  const getPixelCoordinates = (lat: number, lng: number) => {
+    const latRange = INDIA_BOUNDS.north - INDIA_BOUNDS.south;
+    const lngRange = INDIA_BOUNDS.east - INDIA_BOUNDS.west;
+    
+    // Calculate the x and y positions proportionally within the map
+    const x = ((lng - INDIA_BOUNDS.west) / lngRange) * MAP_WIDTH;
+    const y = ((INDIA_BOUNDS.north - lat) / latRange) * MAP_HEIGHT;
+    
+    return { x, y };
+  };
+
+  // Mouse handlers for draggable markers
+  const handleMouseDown = (marker: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(marker);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+
+    // Get the map container bounds
+    const mapRect = e.currentTarget.getBoundingClientRect();
+    
+    // Calculate percentage of map width/height
+    const xPercent = (e.clientX - mapRect.left) / mapRect.width;
+    const yPercent = (e.clientY - mapRect.top) / mapRect.height;
+    
+    // Convert to lat/lng based on India's bounds
+    const lat = INDIA_BOUNDS.north - (yPercent * (INDIA_BOUNDS.north - INDIA_BOUNDS.south));
+    const lng = INDIA_BOUNDS.west + (xPercent * (INDIA_BOUNDS.east - INDIA_BOUNDS.west));
+    
+    // Update coordinates based on which marker is being dragged
+    setCoordinates(prev => ({
       ...prev,
-      you: {
-        ...prev.you,
+      [isDragging]: {
+        ...prev[isDragging as keyof typeof prev],
         lat,
-        lng,
-      },
+        lng
+      }
     }));
   };
 
-  const onMapLoad = useCallback(
-    (map: google.maps.Map) => {
-      mapRef.current = map;
-      setMap(map);
+  const handleMouseUp = () => {
+    if (isDragging) {
+      toast({
+        title: "Location Updated",
+        description: `${isDragging === 'you' ? 'Your' : 'Partner\'s'} location has been updated`,
+      });
+      setIsDragging(null);
+    }
+  };
 
-      // Fit bounds to include both markers
-      const bounds = new google.maps.LatLngBounds();
-      bounds.extend(
-        new google.maps.LatLng(coordinates.you.lat, coordinates.you.lng)
-      );
-      bounds.extend(
-        new google.maps.LatLng(coordinates.partner.lat, coordinates.partner.lng)
-      );
-      map.fitBounds(bounds);
-    },
-    [coordinates]
-  );
-
-  const onMapUnmount = useCallback(() => {
-    setMap(null);
-    mapRef.current = null;
-  }, []);
+  // Get pixel coordinates for both markers
+  const youPixels = getPixelCoordinates(coordinates.you.lat, coordinates.you.lng);
+  const partnerPixels = getPixelCoordinates(coordinates.partner.lat, coordinates.partner.lng);
 
   return (
     <div className="max-w-4xl mx-auto my-16 px-4">
@@ -135,97 +147,69 @@ const DistanceMap = () => {
       <div className="relative">
         {/* The map container */}
         <div className="relative aspect-[16/9] overflow-hidden rounded-xl glass-morphism p-4 shadow-lg">
-          <div className="absolute inset-0 m-4 rounded-lg overflow-hidden">
-            {loadError && (
-              <div className="w-full h-full flex items-center justify-center bg-love-100">
-                <p className="text-love-800">Error loading maps</p>
-              </div>
-            )}
+          <div 
+            className="absolute inset-0 m-4 rounded-lg overflow-hidden bg-blue-50"
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {/* The map image */}
+            <div className="relative w-full h-full select-none">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/0/05/India_relief_location_map.jpg" 
+                alt="Map of India" 
+                className="w-full h-full object-cover rounded-lg"
+                draggable="false"
+              />
+              
+              {/* Line connecting the two points */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                <line
+                  x1={youPixels.x}
+                  y1={youPixels.y}
+                  x2={partnerPixels.x}
+                  y2={partnerPixels.y}
+                  stroke="#F43F75"
+                  strokeWidth="3"
+                  strokeDasharray="5,5"
+                />
+              </svg>
 
-            {!isLoaded && (
-              <div className="w-full h-full flex items-center justify-center bg-love-100">
-                <p className="text-love-800">Loading maps...</p>
-              </div>
-            )}
-
-            {isLoaded && (
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={INDIA_CENTER}
-                zoom={5}
-                onLoad={onMapLoad}
-                onUnmount={onMapUnmount}
-                options={{
-                  fullscreenControl: false,
-                  streetViewControl: false,
-                  mapTypeControl: false,
-                  zoomControl: true,
-                }}
+              {/* Markers for locations */}
+              <div 
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${isDragging === 'you' ? 'z-20' : 'z-10'}`}
+                style={{ left: youPixels.x, top: youPixels.y }}
+                onMouseDown={handleMouseDown('you')}
               >
-                {/* Markers for locations */}
-                <Marker
-                  position={{
-                    lat: coordinates.you.lat,
-                    lng: coordinates.you.lng,
-                  }}
-                  label={{ text: "You", color: "#ffffff" }}
-                  icon={{
-                    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-                    fillColor: "#F43F75",
-                    fillOpacity: 1,
-                    strokeWeight: 1,
-                    strokeColor: "#ffffff",
-                    scale: 2,
-                    anchor: new google.maps.Point(12, 22),
-                  }}
-                />
+                <div className="relative">
+                  <MapPin 
+                    size={40} 
+                    className="text-love-600 drop-shadow-md" 
+                    fill="#FEECF3" 
+                  />
+                  <span className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md shadow-md text-xs font-bold">
+                    {coordinates.you.label}
+                  </span>
+                </div>
+              </div>
 
-                <Marker
-                  position={{
-                    lat: coordinates.partner.lat,
-                    lng: coordinates.partner.lng,
-                  }}
-                  label={{ text: "Partner", color: "#ffffff" }}
-                  icon={{
-                    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
-                    fillColor: "#FFD34D",
-                    fillOpacity: 1,
-                    strokeWeight: 1,
-                    strokeColor: "#ffffff",
-                    scale: 2,
-                    anchor: new google.maps.Point(12, 22),
-                  }}
-                />
-
-                {/* Line connecting the two points */}
-                <Polyline
-                  path={[
-                    { lat: coordinates.you.lat, lng: coordinates.you.lng },
-                    {
-                      lat: coordinates.partner.lat,
-                      lng: coordinates.partner.lng,
-                    },
-                  ]}
-                  options={{
-                    strokeColor: "#F43F75",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 3,
-                    geodesic: true,
-                    icons: [
-                      {
-                        icon: {
-                          path: "M 0,-1 0,1",
-                          strokeOpacity: 1,
-                          scale: 4,
-                        },
-                        offset: "0",
-                        repeat: "20px",
-                      },
-                    ],
-                  }}
-                />
-              </GoogleMap>
-            )}
+              <div 
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${isDragging === 'partner' ? 'z-20' : 'z-10'}`}
+                style={{ left: partnerPixels.x, top: partnerPixels.y }}
+                onMouseDown={handleMouseDown('partner')}
+              >
+                <div className="relative">
+                  <MapPin 
+                    size={40} 
+                    className="text-yellow-500 drop-shadow-md" 
+                    fill="#FFFBED" 
+                  />
+                  <span className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md shadow-md text-xs font-bold">
+                    {coordinates.partner.label}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Distance indicator */}
@@ -234,9 +218,9 @@ const DistanceMap = () => {
             <span className="font-medium text-love-800">{distance} km</span>
           </div>
 
-          {/* Instructions for later */}
+          {/* Instructions */}
           <div className="absolute bottom-3 left-3 bg-white/80 rounded-lg px-3 py-1 shadow-md text-xs text-love-800 z-10">
-            <p>You can update your coordinates later</p>
+            <p>Drag the pins to update locations</p>
           </div>
         </div>
       </div>
