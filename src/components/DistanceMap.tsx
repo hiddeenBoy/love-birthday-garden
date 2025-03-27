@@ -16,20 +16,20 @@ const SVG_WIDTH = 450;
 const SVG_HEIGHT = 400;
 
 const DistanceMap = () => {
-  // Fixed coordinates - Mumbai and Delhi
+  // Fixed coordinates - West Bengal and Tamil Nadu
   const [coordinates] = useState<{
     you: Coordinate;
     partner: Coordinate;
   }>({
     you: {
-      lat: 19.076,
-      lng: 72.8777,
-      label: "You", // Mumbai
+      lat: 22.9868,
+      lng: 87.855,
+      label: "You", // West Bengal
     },
     partner: {
-      lat: 28.6139,
-      lng: 77.209,
-      label: "Partner", // Delhi
+      lat: 11.1271,
+      lng: 78.6569,
+      label: "Partner", // Tamil Nadu
     },
   });
 
@@ -89,7 +89,7 @@ const DistanceMap = () => {
   const showDistanceInfo = () => {
     toast({
       title: "Distance Information",
-      description: `The distance between ${coordinates.you.label} (Mumbai) and ${coordinates.partner.label} (Delhi) is ${distance} kilometers.`,
+      description: `The distance between ${coordinates.you.label} (West Bengal) and ${coordinates.partner.label} (Tamil Nadu) is ${distance} kilometers.`,
     });
   };
 
@@ -162,7 +162,7 @@ const DistanceMap = () => {
                 {distance} km
               </text>
               
-              {/* Mumbai marker (You) */}
+              {/* West Bengal marker (You) */}
               <circle 
                 cx={youSvgCoords.x} 
                 cy={youSvgCoords.y} 
@@ -179,10 +179,10 @@ const DistanceMap = () => {
                 fontWeight="bold" 
                 textAnchor="middle"
               >
-                Mumbai
+                West Bengal
               </text>
               
-              {/* Delhi marker (Partner) */}
+              {/* Tamil Nadu marker (Partner) */}
               <circle 
                 cx={partnerSvgCoords.x} 
                 cy={partnerSvgCoords.y} 
@@ -199,7 +199,7 @@ const DistanceMap = () => {
                 fontWeight="bold" 
                 textAnchor="middle"
               >
-                Delhi
+                Tamil Nadu
               </text>
             </svg>
             
@@ -207,11 +207,11 @@ const DistanceMap = () => {
             <div className="absolute bottom-4 left-4 bg-white/80 p-2 rounded shadow-sm flex space-x-4">
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-love-600 mr-1.5"></div>
-                <span className="text-xs font-medium">Mumbai ({coordinates.you.label})</span>
+                <span className="text-xs font-medium">West Bengal ({coordinates.you.label})</span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-yellow-500 mr-1.5"></div>
-                <span className="text-xs font-medium">Delhi ({coordinates.partner.label})</span>
+                <span className="text-xs font-medium">Tamil Nadu ({coordinates.partner.label})</span>
               </div>
             </div>
           </div>
